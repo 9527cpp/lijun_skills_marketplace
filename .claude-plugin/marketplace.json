@@ -1,72 +1,26 @@
 {
-  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "lijun-skills",
-  "description": "LiJun's custom skills collection for Claude Code: Sunlogin build tools, help, code-summary, git utilities",
   "owner": {
     "name": "LiJun",
     "email": ""
   },
+  "metadata": {
+    "description": "LiJun's custom skills collection for Claude Code: Sunlogin build tools, help, code-summary, git utilities",
+    "version": "1.0.0"
+  },
   "plugins": [
     {
-      "name": "sunlogin-module",
-      "description": "Sunlogin Linux 交叉模块构建工具，封装 cmake_build.py，支持 OpenWrt 模块构建",
-      "version": "1.0.0",
-      "source": "./skills/sunlogin-module/",
-      "author": {
-        "name": "LiJun",
-        "email": ""
-      },
-      "category": "development",
-      "tags": ["sunlogin", "linux", "openwrt", "build", "cmake"]
-    },
-    {
-      "name": "sunlogin-service",
-      "description": "Sunlogin Linux 服务端交叉构建工具，封装 auto_compile.py，支持服务端编译",
-      "version": "1.0.0",
-      "source": "./skills/sunlogin-service/",
-      "author": {
-        "name": "LiJun",
-        "email": ""
-      },
-      "category": "development",
-      "tags": ["sunlogin", "linux", "openwrt", "build", "service"]
-    },
-    {
-      "name": "help",
-      "description": "显示技能帮助信息，通过读取 SKILL.md 提取参数和使用说明",
-      "version": "1.0.0",
-      "source": "./skills/help/",
-      "author": {
-        "name": "LiJun",
-        "email": ""
-      },
-      "category": "utility",
-      "tags": ["help", "utility", "documentation"]
-    },
-    {
-      "name": "code-summary",
-      "description": "将 git commits 转化为中文技术功能文档，支持 Markdown/DOCX/PDF 输出",
-      "version": "1.0.0",
-      "source": "./skills/code-summary/",
-      "author": {
-        "name": "LiJun",
-        "email": ""
-      },
-      "category": "documentation",
-      "tags": ["git", "documentation", "chinese", "technical", "markdown"]
-    },
-    {
-      "name": "git-rewrite-commit-dates",
-      "description": "批量重写 git commit 时间戳，支持指定起始 commit 到 HEAD 的均匀分布",
-      "version": "1.0.0",
-      "source": "./skills/git-rewrite-commit-dates/",
-      "author": {
-        "name": "LiJun",
-        "email": ""
-      },
-      "category": "utility",
-      "tags": ["git", "timestamp", "rewrite", "utility"]
+      "name": "lijun-dev-tools",
+      "description": "LiJun's development tools: Sunlogin build utilities, help, code-summary, git utilities",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/sunlogin-module",
+        "./skills/sunlogin-service",
+        "./skills/help",
+        "./skills/code-summary",
+        "./skills/git-rewrite-commit-dates"
+      ]
     }
-  ],
-  "version": "1.0.0"
+  ]
 }
