@@ -1,0 +1,29 @@
+{
+  "name": "lijun-skills",
+  "displayName": "LiJun's Skills Marketplace",
+  "description": "Collection of custom skills for Sunlogin development and general utilities",
+  "version": "1.0.0",
+  "author": "LiJun",
+  "plugins": [
+    {
+      "name": "sunlogin-module",
+      "version": "1.0.0"
+    },
+    {
+      "name": "sunlogin-service",
+      "version": "1.0.0"
+    },
+    {
+      "name": "help",
+      "version": "1.0.0"
+    },
+    {
+      "name": "code-summary",
+      "version": "1.0.0"
+    },
+    {
+      "name": "git-rewrite-commit-dates",
+      "version": "1.0.0"
+    }
+  ]
+}
