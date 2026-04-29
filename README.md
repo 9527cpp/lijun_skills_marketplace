@@ -26,7 +26,22 @@
 
 ## 安装方式
 
-### 方式一：手动安装
+### 方式一：Plugin Marketplace 安装（推荐）
+
+在 Claude Code 中使用 marketplace 命令安装：
+
+```
+/plugin install https://github.com/9527cpp/lijun_skills_marketplace
+```
+
+或安装单个技能：
+
+```
+/plugin install https://github.com/9527cpp/lijun_skills_marketplace?skill=sunlogin-module
+/plugin install https://github.com/9527cpp/lijun_skills_marketplace?skill=code-summary
+```
+
+### 方式二：手动安装
 
 1. 下载此仓库
 2. 将技能复制到 `~/.claude/skills/` 目录：
@@ -42,7 +57,7 @@ cp -r .claude-plugin/skills/<skill-name> ~/.claude/skills/
 cp -r .claude-plugin/skills/* ~/.claude/skills/
 ```
 
-### 方式二：打包安装
+### 方式三：打包安装
 
 每个技能也可以单独下载 `.skill` 文件安装：
 
