@@ -1,4 +1,5 @@
 {
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "lijun-skills",
   "owner": {
     "name": "LiJun",
@@ -6,37 +7,13 @@
   },
   "metadata": {
     "description": "LiJun's custom skills collection for Claude Code",
-    "version": "1.0.0"
+    "version": "1.0.1"
   },
   "plugins": [
     {
-      "name": "sunlogin-module",
-      "description": "Sunlogin Linux 交叉模块构建工具，封装 cmake_build.py，支持 OpenWrt 模块构建",
-      "source": "./skills/sunlogin-module/",
-      "strict": false
-    },
-    {
-      "name": "sunlogin-service",
-      "description": "Sunlogin Linux 服务端交叉构建工具，封装 auto_compile.py，支持服务端编译",
-      "source": "./skills/sunlogin-service/",
-      "strict": false
-    },
-    {
-      "name": "help",
-      "description": "显示技能帮助信息，通过读取 SKILL.md 提取参数和使用说明",
-      "source": "./skills/help/",
-      "strict": false
-    },
-    {
-      "name": "code-summary",
-      "description": "将 git commits 转化为中文技术功能文档，支持 Markdown/DOCX/PDF 输出",
-      "source": "./skills/code-summary/",
-      "strict": false
-    },
-    {
-      "name": "git-rewrite-commit-dates",
-      "description": "批量重写 git commit 时间戳，支持指定起始 commit 到 HEAD 的均匀分布",
-      "source": "./skills/git-rewrite-commit-dates/",
+      "name": "lijun-skills-bundle",
+      "description": "Sunlogin 构建、code-summary、git 时间戳等自定义技能合集",
+      "source": "./",
       "strict": false
     }
   ]

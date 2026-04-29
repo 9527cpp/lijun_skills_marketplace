@@ -28,33 +28,43 @@
 
 ### 方式一：Plugin Marketplace 安装（推荐）
 
-在 Claude Code 中使用 marketplace 命令安装：
+**仅「添加 marketplace」不会安装插件**，需要再执行一次 **install**（官方文档：[Discover plugins](https://code.claude.com/docs/en/discover-plugins)）。
+
+1. 添加本仓库为 marketplace（Git URL，便于解析插件内的相对路径 `./`）：
 
 ```
-/plugin install https://github.com/9527cpp/lijun_skills_marketplace
+/plugin marketplace add https://github.com/9527cpp/lijun_skills_marketplace
 ```
 
-或安装单个技能：
+2. 从该 marketplace **安装插件包**（本仓库只发布一个 bundle，内含全部技能）：
 
 ```
-/plugin install https://github.com/9527cpp/lijun_skills_marketplace?skill=sunlogin-module
-/plugin install https://github.com/9527cpp/lijun_skills_marketplace?skill=code-summary
+/plugin install lijun-skills-bundle@lijun-skills
 ```
+
+3. 重新加载插件：
+
+```
+/reload-plugins
+```
+
+安装成功后，技能会出现在 Claude Code 的技能加载逻辑中；在对话里自然语言描述任务即可触发（与 `SKILL.md` 里的 `description` 匹配）。文档中的 `/code-summary` 等写法表示「习惯用语」，若你的环境里未注册同名 slash command，可直接说「用 code-summary 总结从 xxx 到 HEAD 的提交」。
 
 ### 方式二：手动安装
 
 1. 下载此仓库
-2. 将技能复制到 `~/.claude/skills/` 目录：
+2. 将仓库根目录下 `skills/` 中的目录复制到 `~/.claude/skills/`：
 
 ```bash
 # 克隆仓库
 git clone https://github.com/9527cpp/lijun_skills_marketplace.git
+cd lijun_skills_marketplace
 
 # 复制单个技能
-cp -r .claude-plugin/skills/<skill-name> ~/.claude/skills/
+cp -r skills/<skill-name> ~/.claude/skills/
 
 # 或复制所有技能
-cp -r .claude-plugin/skills/* ~/.claude/skills/
+cp -r skills/* ~/.claude/skills/
 ```
 
 ### 方式三：打包安装
