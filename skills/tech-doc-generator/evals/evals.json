@@ -1,0 +1,23 @@
+{
+  "skill_name": "tech-doc-generator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "帮我生成一个 Rockchip MPP 图像质量调优的技术文档",
+      "expected_output": "包含背景介绍、名词解析、原理介绍、技术实现、核心流程、注意事项的完整技术文档",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "研究一下 Linux V4L2 框架的实现原理，帮我整理成技术文档",
+      "expected_output": "包含代码方向内容：核心代码解析、代码调用流程、代码架构图",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "我想了解一下 GPU 性能优化的技术方案，生成一份技术文档",
+      "expected_output": "包含性能方向内容：性能优化方法、性能数据对比、优化百分比",
+      "files": []
+    }
+  ]
+}
