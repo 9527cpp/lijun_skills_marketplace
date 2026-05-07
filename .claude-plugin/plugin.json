@@ -1,7 +1,7 @@
 {
   "name": "lijun-skills-bundle",
   "id": "com.lijun.skills",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "LiJun's custom skills collection for Claude Code",
   "author": {
     "name": "LiJun",

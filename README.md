@@ -50,6 +50,19 @@
 
 安装成功后，技能会出现在 Claude Code 的技能加载逻辑中；在对话里自然语言描述任务即可触发（与 `SKILL.md` 里的 `description` 匹配）。文档中的 `/code-summary` 等写法表示「习惯用语」，若你的环境里未注册同名 slash command，可直接说「用 code-summary 总结从 xxx 到 HEAD 的提交」。
 
+#### 若出现 `Plugin xxx not found in marketplace lijun-skills`
+
+说明配置里仍**启用**了旧版 marketplace 的插件名（例如 `code-summary@lijun-skills`），而当前目录里已改为只主推 **`lijun-skills-bundle`**。
+
+**做法一（推荐）**：编辑 `~/.claude/settings.json`（以及项目内 `.claude/settings.local.json` 若存在），在 `enabledPlugins` 中：
+
+- 删除这五个键（若存在）：`code-summary@lijun-skills`、`git-rewrite-commit-dates@lijun-skills`、`help@lijun-skills`、`sunlogin-module@lijun-skills`、`sunlogin-service@lijun-skills`
+- 只保留一项：`"lijun-skills-bundle@lijun-skills": true`
+
+保存后执行 `/plugin marketplace update`，再 `/reload-plugins`。
+
+**做法二**：本仓库的 `marketplace.json` 从 1.0.2 起为上述旧名称保留了 **catalog 别名**（与 bundle 同源 `./`），更新 marketplace 后错误应消失。若希望配置干净，仍建议按做法一改为只启用 `lijun-skills-bundle`。
+
 ### 方式二：手动安装
 
 1. 下载此仓库
