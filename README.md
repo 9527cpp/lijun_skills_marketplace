@@ -23,6 +23,7 @@
 | 技能名称 | 描述 |
 |---------|------|
 | **code-summary** | 将 git commits 转化为中文技术功能文档，支持 Markdown/DOCX/PDF 输出格式 |
+| **tech-doc-generator** | 根据技术方向自动搜索网络资源并生成结构化技术文档，支持性能/代码/通用方向 |
 
 ## 安装方式
 
@@ -160,6 +161,23 @@ skill_name --help
 # 预览模式（不实际修改）
 /git-rewrite-commit-dates --start-commit <SHA> --dry-run
 ```
+
+### tech-doc-generator
+
+根据技术方向自动生成结构化技术文档：
+
+```bash
+# 模糊方向（如性能优化）
+/tech-doc-generator rockchip mpp 图像质量调优
+
+# 明确主题
+/tech-doc-generator Linux V4L2 框架分析
+
+# 代码方向（如驱动分析）
+/tech-doc-generator Android Binder 驱动分析
+```
+
+文档自动包含：背景介绍、名词解析、原理说明、技术实现、核心流程、注意事项，并根据方向自动添加性能对比或代码架构图。生成完成后可选择保存为 Markdown 文件。
 
 ## 技能开发
 
