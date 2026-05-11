@@ -35,6 +35,12 @@
       "strict": false
     },
     {
+      "name": "kk-build",
+      "description": "兼容旧版 enabledPlugins 名称；与 bundle 同源，仅 catalog 别名",
+      "source": "./",
+      "strict": false
+    },
+    {
       "name": "sunlogin-module",
       "description": "兼容旧版 enabledPlugins 名称；与 bundle 同源，仅 catalog 别名",
       "source": "./",

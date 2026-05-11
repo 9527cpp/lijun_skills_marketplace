@@ -10,6 +10,7 @@
 |---------|------|
 | **sunlogin-module** | Sunlogin Linux 交叉模块构建工具，封装 `cmake_build.py`，支持 OpenWrt 模块构建、上传到 devres |
 | **sunlogin-service** | Sunlogin Linux 服务端交叉构建工具，封装 `auto_compile.py`，支持服务端编译和上传 |
+| **kk-build** | SunloginClient KongKong 控控嵌入式交叉编译构建工具，封装 `kk_build.sh`，支持模块插件、第三方库、kk接口编译和上传 |
 
 ### 通用工具 (Utilities)
 
@@ -118,6 +119,25 @@ python ~/.claude/skills/sunlogin-service/scripts/sunlogin_service_build.py -t <t
 - `-c <cross_path>`: 交叉编译路径（可选）
 - `-r`: 是否上传到 devres（可选）
 - `-d`: 调试模式（可选）
+
+### kk-build
+
+在 SunloginClient 项目根目录执行控控嵌入式构建：
+
+```bash
+./kk_build.sh --cross_chain /path/to/toolchain --target <target> [--modules <modules>] [--debug] [--pack]
+```
+
+参数说明：
+- `--cross_chain <path>`: 交叉编译工具链路径（必填）
+- `--target <target>`: 目标平台，如 `arm-openwrt-linux`（必填）
+- `--modules <modules>`: 指定模块列表，默认：`desktop audio usbip ssh camera file kk`
+- `--main`: 仅编译主程序
+- `--3rd`: 仅编译第三方依赖库
+- `--debug`: Debug 模式编译
+- `--pack`: 仅执行打包操作
+- `--quiet`: 静默模式
+- `--no_upload`: 不上传编译结果
 
 ### help
 
