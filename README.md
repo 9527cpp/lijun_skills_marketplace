@@ -133,7 +133,7 @@ python ~/.claude/skills/sunlogin-service/scripts/sunlogin_service_build.py -t <t
 - `--target <target>`: 目标平台，如 `arm-openwrt-linux`（必填）
 - `--modules <modules>`: 指定模块列表，默认：`desktop audio usbip ssh camera file kk`
 - `--main`: 仅编译主程序
-- `--3rd`: 仅编译第三方依赖库
+- `--3rd [libs]`: 仅编译第三方依赖库，可指定库名（逗号分隔），如 `--3rd openssl,zlib`（可选）
 - `--debug`: Debug 模式编译
 - `--pack`: 仅执行打包操作
 - `--quiet`: 静默模式

@@ -129,7 +129,8 @@ print_help() {
   --modules <modules>    指定要编译的模块列表，空格分隔
                           (默认: desktop audio usbip ssh camera file kk)
   --main                  仅编译主程序
-  --3rd                   仅编译第三方依赖库
+  --3rd [libs]          仅编译第三方依赖库，可指定库名(逗号分隔)
+                          如: --3rd openssl,fftw 或不指定则编译所有
   --debug                 启用Debug模式编译，默认Release
   --pack                  仅执行打包操作，不编译
   --quiet                 静默模式，编译输出重定向到/dev/null
@@ -528,15 +529,15 @@ pack_zlib_1.2.3() {
         return 1
     }
     
-    # 复制库文件
-    #cp -f "${zlib_dir}/libz.a" "${temp_pack_dir}/lib/" || {
-    #    error_msg "复制zlib静态库失败"
-    #    return 1
-    #}
-    
-    # 复制库文件
+    # 复制静态库
+    cp -f "${zlib_dir}/libz.a" "${temp_pack_dir}/lib/" || {
+        error_msg "复制zlib静态库失败"
+        return 1
+    }
+
+    # 复制动态库
     cp -f ${zlib_dir}/libz.so* "${temp_pack_dir}/lib/" || {
-    error_msg "复制zlib动态库失败"
+        error_msg "复制zlib动态库失败"
         return 1
     }
     
@@ -1463,59 +1464,86 @@ pack_uci() {
     return 0
 }
 ################# compile control #################
-# 第三方库编译打包与上传函数
-# 三方库的一些交叉编译请参考文档链接: 
-# https://drive.orayer.com/d/f/139rZRbKbmoWbanyoaC6CkkSOvrIIRIe
+# 检查是否需要编译指定库
+should_compile_3rd() {
+    local lib="$1"
+    if [ -z "$third_libs" ]; then
+        return 0
+    fi
+    echo "$third_libs" | grep -q "$lib"
+}
 
+# 第三方库编译打包与上传函数
 compile_3rd() {
-    info_msg "开始编译第三方依赖库..." 
     local exit_code=0
 
+    if [ -n "$third_libs" ]; then
+        info_msg "开始编译指定第三方依赖库: $third_libs ..."
+    else
+        info_msg "开始编译所有第三方依赖库..."
+    fi
+
     # 按顺序执行各第三方库编译函数
-    info_msg "编译openssl 1.1.1q..." 
-    compile_openssl_1.1.1q || { error_msg "openssl编译失败" ; exit_code=1; }
-    pack_openssl_1.1.1q || { error_msg "openssl打包失败" ; exit_code=1; }
-    $upload_flag && upload_modules "3rd" "openssl" "1.1.1q" "1"
+    if should_compile_3rd "openssl"; then
+        info_msg "编译openssl 1.1.1q..."
+        compile_openssl_1.1.1q || { error_msg "openssl编译失败" ; exit_code=1; }
+        pack_openssl_1.1.1q || { error_msg "openssl打包失败" ; exit_code=1; }
+        $upload_flag && upload_modules "3rd" "openssl" "1.1.1q" "1"
+    fi
 
-    info_msg "编译fftw 3.3.10..." 
-    compile_fftw_3.3.10 || { error_msg "fftw编译失败" ; exit_code=1; }
-    pack_fftw_3.3.10 || { error_msg "fftw打包失败" ; exit_code=1; }
-    $upload_flag && upload_modules "3rd" "fftw" "3.3.10" "1"
+    if should_compile_3rd "fftw"; then
+        info_msg "编译fftw 3.3.10..."
+        compile_fftw_3.3.10 || { error_msg "fftw编译失败" ; exit_code=1; }
+        pack_fftw_3.3.10 || { error_msg "fftw打包失败" ; exit_code=1; }
+        $upload_flag && upload_modules "3rd" "fftw" "3.3.10" "1"
+    fi
 
-    info_msg "编译protobuf 3.15.8..." 
-    compile_protobuf_3.15.8 || { error_msg "protobuf编译失败" ; exit_code=1; }
-    pack_protobuf_3.15.8 || { error_msg "protobuf打包失败" ; exit_code=1; }
-    $upload_flag && upload_modules "3rd" "protobuf" "3.15.8" "1"
+    if should_compile_3rd "protobuf"; then
+        info_msg "编译protobuf 3.15.8..."
+        compile_protobuf_3.15.8 || { error_msg "protobuf编译失败" ; exit_code=1; }
+        pack_protobuf_3.15.8 || { error_msg "protobuf打包失败" ; exit_code=1; }
+        $upload_flag && upload_modules "3rd" "protobuf" "3.15.8" "1"
+    fi
 
-    info_msg "编译zlib 1.2.3..." 
-    compile_zlib_1.2.3 || { error_msg "zlib编译失败" ; exit_code=1; }
-    pack_zlib_1.2.3 || { error_msg "zlib打包失败" ; exit_code=1; }  
-    $upload_flag && upload_modules "3rd" "zlib" "1.2.3" "1"
+    if should_compile_3rd "zlib"; then
+        info_msg "编译zlib 1.2.3..."
+        compile_zlib_1.2.3 || { error_msg "zlib编译失败" ; exit_code=1; }
+        pack_zlib_1.2.3 || { error_msg "zlib打包失败" ; exit_code=1; }
+        $upload_flag && upload_modules "3rd" "zlib" "1.2.3" "1"
+    fi
 
-    info_msg "编译replxx 0.0.4..." 
-    compile_replxx_0.0.4 || { error_msg "replxx编译失败" ; exit_code=1; }
-    pack_replxx_0.0.4 || { error_msg "replxx打包失败" ; exit_code=1; }  
-    $upload_flag && upload_modules "3rd" "replxx" "0.0.4" "1"
+    if should_compile_3rd "replxx"; then
+        info_msg "编译replxx 0.0.4..."
+        compile_replxx_0.0.4 || { error_msg "replxx编译失败" ; exit_code=1; }
+        pack_replxx_0.0.4 || { error_msg "replxx打包失败" ; exit_code=1; }
+        $upload_flag && upload_modules "3rd" "replxx" "0.0.4" "1"
+    fi
 
-    info_msg "编译Lua 5.3.2..."
-    compile_lua_5.3.2 || { error_msg "Lua编译失败" ; exit_code=1; }
-    pack_lua_5.3.2 || { error_msg "Lua打包失败" ; exit_code=1; }
-    $upload_flag && upload_modules "3rd" "lua" "5.3.2" "1"
+    if should_compile_3rd "lua"; then
+        info_msg "编译Lua 5.3.2..."
+        compile_lua_5.3.2 || { error_msg "Lua编译失败" ; exit_code=1; }
+        pack_lua_5.3.2 || { error_msg "Lua打包失败" ; exit_code=1; }
+        $upload_flag && upload_modules "3rd" "lua" "5.3.2" "1"
+    fi
 
-    info_msg "编译eudev 3.2.9..."
-    compile_eudev_3.2.9 || { error_msg "eudev编译失败" ; exit_code=1; }
-    pack_eudev_3.2.9 || { error_msg "eudev打包失败" ; exit_code=1; }
-    $upload_flag && upload_modules "3rd" "eudev" "3.2.9" "1"
+    if should_compile_3rd "eudev"; then
+        info_msg "编译eudev 3.2.9..."
+        compile_eudev_3.2.9 || { error_msg "eudev编译失败" ; exit_code=1; }
+        pack_eudev_3.2.9 || { error_msg "eudev打包失败" ; exit_code=1; }
+        $upload_flag && upload_modules "3rd" "eudev" "3.2.9" "1"
+    fi
 
-    info_msg "编译uci"
-    compile_uci || { error_msg "uci编译失败" ; exit_code=1; }
-    pack_uci || { error_msg "uci打包失败" ; exit_code=1; }
-    $upload_flag && upload_modules "3rd" "uci" "1.0.0" "1"
+    if should_compile_3rd "uci"; then
+        info_msg "编译uci"
+        compile_uci || { error_msg "uci编译失败" ; exit_code=1; }
+        pack_uci || { error_msg "uci打包失败" ; exit_code=1; }
+        $upload_flag && upload_modules "3rd" "uci" "1.0.0" "1"
+    fi
 
     if [ $exit_code -eq 0 ]; then
-        info_msg "所有第三方库编译完成" 
+        info_msg "所有第三方库编译完成"
     else
-        error_msg "部分第三方库编译失败，请检查错误信息" 
+        error_msg "部分第三方库编译失败，请检查错误信息"
         exit $exit_code
     fi
 }
@@ -1860,6 +1888,7 @@ modules_specified=false
 build_modules=false
 build_main=false
 build_3rd=false
+third_libs=""
 pack_only=false
 verbose_mode=false
 redirect_flag=""
@@ -1904,6 +1933,12 @@ while [[ $# -gt 0 ]]; do
             ;;
         --3rd)
             build_3rd=true
+            third_libs="$2"
+            if [[ "$2" == --* ]] || [ -z "$2" ]; then
+                third_libs=""
+            else
+                shift
+            fi
             shift
             ;;
         --no-upload)

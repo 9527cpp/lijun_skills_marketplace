@@ -53,7 +53,7 @@ commands:
     | `--target <target>` | 目标平台 (如 arm-openwrt-linux, aarch64-openwrt-linux, arm-rockchip830-linux-uclibcgnueabihf) | 是 |
     | `--modules <modules>` | 指定要编译的模块列表，空格分隔 | 否 |
     | `--main` | 仅编译主程序 | 否 |
-    | `--3rd` | 仅编译第三方依赖库 | 否 |
+    | `--3rd [libs]` | 仅编译第三方依赖库，可指定库名(逗号分隔) | 否 |
     | `--debug` | 启用Debug模式编译，默认Release | 否 |
     | `--pack` | 仅执行打包操作，不编译 | 否 |
     | `--quiet` | 静默模式，编译输出重定向到/dev/null | 否 |
@@ -84,6 +84,9 @@ commands:
 
     # 仅编译第三方依赖库
     ./kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --3rd
+
+    # 仅编译指定第三方库(逗号分隔)
+    ./kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --3rd openssl,zlib
 
     # 仅打包(不编译，需先编译)
     ./kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --pack
