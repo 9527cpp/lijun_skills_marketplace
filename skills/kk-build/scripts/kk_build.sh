@@ -492,6 +492,10 @@ compile_zlib_1.2.3() {
         return 1
     fi
 
+    # 单独编译静态库(zlib --shared不会生成libz.a)
+    info_msg "编译zlib静态库..."
+    make libz.a $redirect_flag || { error_msg "zlib静态库编译失败"; cd .. || return 1; return 1; }
+
     # 返回到调用目录并清理环境变量
     cd .. || return 1
     unset CC CXX AR RANLIB
