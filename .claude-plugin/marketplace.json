@@ -14,6 +14,15 @@
       "name": "lijun-skills-bundle",
       "description": "推荐：单包安装全部技能（Sunlogin、code-summary、git 时间戳、help）",
       "source": "./skills",
+      "skills": [
+        "./kk-build",
+        "./sunlogin-module",
+        "./sunlogin-service",
+        "./tech-doc-generator",
+        "./code-summary",
+        "./git-rewrite-commit-dates",
+        "./help"
+      ],
       "strict": false
     },
     {
