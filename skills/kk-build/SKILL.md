@@ -25,7 +25,8 @@ context: |
 
   ## 关键文件位置
 
-  - 构建脚本: `./kk_build.sh` (项目根目录) 或 `scripts/kk_build.sh` (skill目录)
+  - 构建脚本: `scripts/kk_build.sh` (skill目录，相对于 skill 根目录)
+  - skill 根目录: `{plugin_root}/skills/kk-build/`
   - 模块源码: `modules/client/{module}/` (项目根目录下)
   - modules.json: `modules.json` (项目根目录)
   - kk接口源码: `kk_sunlogin_upgrade/` (项目根目录)
@@ -66,40 +67,42 @@ commands:
   usage: |
     ## 使用示例
 
+    脚本路径: `scripts/kk_build.sh` (相对于 skill 根目录)
+
     ```bash
     # 完整编译(模块+主程序)并打包上传
-    ./kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux
+    scripts/kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux
 
     # Debug模式编译
-    ./kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --debug
+    scripts/kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --debug
 
     # 指定模块自定义路径编译
-    ./kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux \
+    scripts/kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux \
         --module_path desktop /path/to/desktop/source
 
     # 仅编译指定模块(如usbip)
-    ./kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --modules usbip
+    scripts/kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --modules usbip
 
     # 仅编译主程序
-    ./kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --main
+    scripts/kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --main
 
     # 仅编译第三方依赖库
-    ./kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --3rd
+    scripts/kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --3rd
 
     # 仅编译指定第三方库(逗号分隔)
-    ./kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --3rd openssl,zlib
+    scripts/kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --3rd openssl,zlib
 
     # 仅编译不在本地编译的第三方依赖库(如sl-control等)
-    ./kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --sl_other
+    scripts/kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --sl_other
 
     # 仅打包(不编译，需先编译)
-    ./kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --pack
+    scripts/kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --pack
 
     # 静默模式编译
-    ./kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --quiet
+    scripts/kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --quiet
 
     # 不上传编译结果
-    ./kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --no_upload
+    scripts/kk_build.sh --cross_chain /path/to/toolchain --target arm-openwrt-linux --no_upload
     ```
 
   modules: |
