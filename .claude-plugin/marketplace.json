@@ -13,43 +13,43 @@
     {
       "name": "lijun-skills-bundle",
       "description": "推荐：单包安装全部技能（Sunlogin、code-summary、git 时间戳、help）",
-      "source": "./",
+      "source": "./skills",
       "strict": false
     },
     {
       "name": "code-summary",
-      "description": "兼容旧版 enabledPlugins 名称；与 bundle 同源，仅 catalog 别名",
-      "source": "./",
+      "description": "兼容旧版 enabledPlugins 名称；与 bundle 同源",
+      "source": "./skills/code-summary",
       "strict": false
     },
     {
       "name": "git-rewrite-commit-dates",
-      "description": "兼容旧版 enabledPlugins 名称；与 bundle 同源，仅 catalog 别名",
-      "source": "./",
+      "description": "兼容旧版 enabledPlugins 名称；与 bundle 同源",
+      "source": "./skills/git-rewrite-commit-dates",
       "strict": false
     },
     {
       "name": "help",
-      "description": "兼容旧版 enabledPlugins 名称；与 bundle 同源，仅 catalog 别名",
-      "source": "./",
+      "description": "兼容旧版 enabledPlugins 名称；与 bundle 同源",
+      "source": "./skills/help",
       "strict": false
     },
     {
       "name": "kk-build",
-      "description": "兼容旧版 enabledPlugins 名称；与 bundle 同源，仅 catalog 别名",
-      "source": "./",
+      "description": "兼容旧版 enabledPlugins 名称；与 bundle 同源",
+      "source": "./skills/kk-build",
       "strict": false
     },
     {
       "name": "sunlogin-module",
-      "description": "兼容旧版 enabledPlugins 名称；与 bundle 同源，仅 catalog 别名",
-      "source": "./",
+      "description": "兼容旧版 enabledPlugins 名称；与 bundle 同源",
+      "source": "./skills/sunlogin-module",
       "strict": false
     },
     {
       "name": "sunlogin-service",
-      "description": "兼容旧版 enabledPlugins 名称；与 bundle 同源，仅 catalog 别名",
-      "source": "./",
+      "description": "兼容旧版 enabledPlugins 名称；与 bundle 同源",
+      "source": "./skills/sunlogin-service",
       "strict": false
     }
   ]
