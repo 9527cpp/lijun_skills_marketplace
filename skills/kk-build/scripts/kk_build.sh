@@ -131,6 +131,7 @@ print_help() {
   --main                  仅编译主程序
   --3rd [libs]          仅编译第三方依赖库，可指定库名(逗号分隔)
                           如: --3rd openssl,fftw 或不指定则编译所有
+  --sl_other            仅编译不在本地编译的第三方依赖库(如sl-control等)
   --debug                 启用Debug模式编译，默认Release
   --pack                  仅执行打包操作，不编译
   --quiet                 静默模式，编译输出重定向到/dev/null
@@ -1612,6 +1613,19 @@ copy_sl_other_no_compile_module() {
         # 如果目标文件不存在，使用fallback架构
         if [ "$http_status" -ne 200 ]; then
             info_msg "目标文件不存在 (HTTP状态码: $http_status)，尝试使用fallback架构: $fallback_arch"
+
+            # 从 modules.json 中查找 fallback 架构对应的 build_version
+            # 使用 != null 检查替代 has()，避免 has() 在某些条目上抛出错误
+            local fallback_entry=$(echo "$json_data" | jq -r ".modules[] | select(.name == \"${module_name}\" and .build_version[\"linux-${fallback_arch}\"] != null)" 2>/dev/null)
+
+            if [ -n "$fallback_entry" ] && [ "$fallback_entry" != "null" ]; then
+                build_version=$(echo "$fallback_entry" | jq -r ".build_version[\"linux-${fallback_arch}\"]")
+                info_msg "使用fallback架构 $fallback_arch 的 build_version: $build_version"
+            else
+                error_msg "在modules.json中未找到模块${module_name}在fallback架构 ${fallback_arch} 下的build_version"
+                return 1
+            fi
+
             fallback_filename="${module_name}-${module_version}-linux-${fallback_arch}-${build_version}.zip"
             fallback_download_url="${base_url}/${fallback_filename}"
 
@@ -1675,8 +1689,8 @@ copy_sl_other_no_compile_module() {
         module_owner="sunlogin"
 
         # 首先尝试找到包含linux-${target}的build_version的模块条目
-        # 这解决了同名模块多个条目的问题
-        module_entry=$(echo "$json_data" | jq -r ".modules[] | select(.name == \"${module_name}\" and .build_version | has(\"linux-${target}\"))" 2>/dev/null)
+        # 使用 != null 检查替代 has()，避免 has() 在某些条目上抛出错误
+        module_entry=$(echo "$json_data" | jq -r ".modules[] | select(.name == \"${module_name}\" and .build_version[\"linux-${target}\"] != null)" 2>/dev/null)
 
         if [ -n "$module_entry" ] && [ "$module_entry" != "null" ]; then
             # 从找到的条目中提取版本信息
@@ -1888,6 +1902,7 @@ modules_specified=false
 build_modules=false
 build_main=false
 build_3rd=false
+build_sl_other=false
 third_libs=""
 pack_only=false
 verbose_mode=false
@@ -1939,6 +1954,10 @@ while [[ $# -gt 0 ]]; do
             else
                 shift
             fi
+            shift
+            ;;
+        --sl_other)
+            build_sl_other=true
             shift
             ;;
         --no-upload)
@@ -2042,10 +2061,11 @@ if [ "$pack_only" = true ]; then
 fi
 
 # 执行编译逻辑
-if "$build_modules" || "$build_main" || "$build_3rd"; then
+if "$build_modules" || "$build_main" || "$build_3rd" || "$build_sl_other"; then
     $build_3rd && compile_3rd
     $build_modules && compile_modules "$modules"
     $build_main && compile_main
+    $build_sl_other && copy_sl_other_no_compile_module
 else
     # compile_3rd
     # copy_sl_other_no_compile_module
