@@ -1146,6 +1146,188 @@ pack_lua_5.3.2() {
 }
 
 
+# 编译fts库
+# 依赖: git, 交叉编译工具链, autotools
+compile_musl_fts() {
+    local musl_fts_dir="musl-fts"
+    local repo_url="https://github.com/void-linux/musl-fts.git"
+
+    info_msg "开始编译fts..."
+
+    # 检查源码目录是否存在
+    if [ ! -d "${musl_fts_dir}" ]; then
+        info_msg "从${repo_url}克隆fts仓库..."
+        if ! git clone "${repo_url}" "${musl_fts_dir}"; then
+            error_msg "克隆fts仓库失败"
+            return 1
+        fi
+    fi
+
+    # 进入源码目录
+    if ! cd "${musl_fts_dir}"; then
+        error_msg "无法进入fts源码目录: ${musl_fts_dir}"
+        return 1
+    fi
+
+    # 检查交叉编译工具链
+    local cc_path="${cross_chain}/bin/${target}-gcc"
+    if [ ! -x "${cc_path}" ]; then
+        error_msg "错误: 交叉编译工具链不存在 ${cc_path}"
+        return 1
+    fi
+
+    # 运行bootstrap.sh生成configure脚本
+    info_msg "正在运行bootstrap.sh生成configure脚本..."
+    if ! bash bootstrap.sh; then
+        error_msg "错误: bootstrap.sh执行失败"
+        cd - > /dev/null || return 1
+        return 1
+    fi
+
+    # 检查configure脚本是否生成
+    if [ ! -x "./configure" ]; then
+        error_msg "错误: configure脚本不存在或不可执行"
+        cd - > /dev/null || return 1
+        return 1
+    fi
+
+    # 设置交叉编译环境变量
+    info_msg "正在配置fts交叉编译环境..."
+    export CC="${cc_path}"
+    export AR="${cross_chain}/bin/${target}-ar"
+    export RANLIB="${cross_chain}/bin/${target}-ranlib"
+    export LD="${cross_chain}/bin/${target}-ld"
+    export CFLAGS="-I${cross_chain}/${target}/include"
+    export LDFLAGS="-L${cross_chain}/${target}/lib"
+    export PKG_CONFIG_PATH="${cross_chain}/${target}/lib/pkgconfig"
+
+    # 配置编译选项
+    info_msg "正在配置fts..."
+    if ! ./configure \
+        --host="${target}" \
+        --prefix="${cross_chain}/${target}" \
+        $redirect_flag
+    then
+        error_msg "错误: fts配置失败"
+        unset CC AR RANLIB LD CFLAGS LDFLAGS PKG_CONFIG_PATH
+        cd - > /dev/null || return 1
+        return 1
+    fi
+
+    # 编译源码
+    info_msg "正在编译fts..."
+    if ! make -j$(nproc) $redirect_flag; then
+        error_msg "错误: fts编译失败"
+        unset CC AR RANLIB LD CFLAGS LDFLAGS PKG_CONFIG_PATH
+        cd - > /dev/null || return 1
+        return 1
+    fi
+
+    # 安装到目标目录
+    info_msg "正在安装fts..."
+    if ! make install $redirect_flag; then
+        error_msg "错误: fts安装失败"
+        unset CC AR RANLIB LD CFLAGS LDFLAGS PKG_CONFIG_PATH
+        cd - > /dev/null || return 1
+        return 1
+    fi
+
+    unset CC AR RANLIB LD CFLAGS LDFLAGS PKG_CONFIG_PATH
+    cd - > /dev/null || return 1
+    info_msg "fts编译并安装成功"
+    return 0
+}
+
+# 打包fts库
+# 依赖: 已编译的fts库
+pack_musl_fts() {
+    local musl_fts_version="1.2.7"
+    local musl_fts_dir="musl-fts"
+    local build_version="1"
+    local output_zip="fts-${musl_fts_version}-linux-${target}-${build_version}.zip"
+    local temp_pack_dir="handcake/linux/fts-${target}"
+
+    info_msg "开始打包fts..."
+
+    # 检查目标路径参数
+    if [ -z "${target}" ]; then
+        error_msg "错误: 未指定target参数，无法执行打包操作"
+        return 1
+    fi
+
+    # 检查源码目录是否存在
+    if [ ! -d "${musl_fts_dir}" ]; then
+        error_msg "错误: musl-fts源码目录不存在: ${musl_fts_dir}"
+        return 1
+    fi
+
+    # 清理之前的打包文件
+    rm -rf "${temp_pack_dir}" "${output_zip}"
+
+    # 创建目标目录结构
+    info_msg "创建打包目标目录结构: ${temp_pack_dir}"
+    mkdir -p "${temp_pack_dir}/lib"
+    mkdir -p "${temp_pack_dir}/include"
+    mkdir -p "${temp_pack_dir}/pkgconfig"
+
+    # 复制所有libfts相关的动态库和静态库
+    info_msg "复制库文件..."
+    if [ -d "${musl_fts_dir}/.libs" ]; then
+        # 复制所有 .so* 文件（动态库）
+        for lib in "${musl_fts_dir}/.libs"/libfts.so*; do
+            if [ -f "$lib" ]; then
+                cp -f "$lib" "${temp_pack_dir}/lib/" && info_msg "已复制: $(basename $lib)"
+            fi
+        done
+        # 复制静态库 .a 文件
+        if [ -f "${musl_fts_dir}/.libs/libfts.a" ]; then
+            cp -f "${musl_fts_dir}/.libs/libfts.a" "${temp_pack_dir}/lib/" && info_msg "已复制: libfts.a"
+        fi
+        # 复制 .la 文件（libtool 库描述文件）
+        if [ -f "${musl_fts_dir}/.libs/libfts.la" ]; then
+            cp -f "${musl_fts_dir}/.libs/libfts.la" "${temp_pack_dir}/lib/" && info_msg "已复制: libfts.la"
+        fi
+    else
+        warn_msg "警告: .libs目录不存在: ${musl_fts_dir}/.libs"
+    fi
+
+    # 复制头文件
+    if [ -f "${musl_fts_dir}/fts.h" ]; then
+        cp -f "${musl_fts_dir}/fts.h" "${temp_pack_dir}/include/" && info_msg "已复制头文件: fts.h"
+    else
+        warn_msg "警告: 头文件不存在: ${musl_fts_dir}/fts.h"
+    fi
+
+    # 复制pkg-config文件
+    if [ -f "${musl_fts_dir}/musl-fts.pc" ]; then
+        cp -f "${musl_fts_dir}/musl-fts.pc" "${temp_pack_dir}/pkgconfig/" && info_msg "已复制pkg-config: musl-fts.pc"
+    fi
+
+    # 检查是否有文件被复制
+    if [ -z "$(ls -A ${temp_pack_dir}/lib/ 2>/dev/null)" ]; then
+        error_msg "错误: 没有找到任何库文件，打包失败"
+        rm -rf "${temp_pack_dir}"
+        return 1
+    fi
+
+    # 创建zip包
+    info_msg "创建zip包: ${output_zip}"
+    cd "${temp_pack_dir}" || { error_msg "无法进入临时打包目录"; return 1; }
+    zip -rq "../../../${output_zip}" . $redirect_flag || {
+        error_msg "创建zip包失败"
+        cd - > /dev/null || return 1
+        rm -rf "${temp_pack_dir}"
+        return 1
+    }
+    cd - > /dev/null || return 1
+
+    # 清理临时目录
+    rm -rf "${temp_pack_dir}"
+
+    info_msg "musl-fts打包完成，生成文件: ${output_zip}"
+    return 0
+}
+
 # 编译eudev 3.2.9库函数
 compile_eudev_3.2.9() {
     local eudev_version="3.2.9"
@@ -1536,6 +1718,13 @@ compile_3rd() {
         compile_eudev_3.2.9 || { error_msg "eudev编译失败" ; exit_code=1; }
         pack_eudev_3.2.9 || { error_msg "eudev打包失败" ; exit_code=1; }
         $upload_flag && upload_modules "3rd" "eudev" "3.2.9" "1"
+    fi
+
+    if should_compile_3rd "fts"; then
+        info_msg "编译fts..."
+        compile_musl_fts || { error_msg "fts编译失败" ; exit_code=1; }
+        pack_musl_fts || { error_msg "fts打包失败" ; exit_code=1; }
+        $upload_flag && upload_modules "3rd" "fts" "1.2.7" "1"
     fi
 
     if should_compile_3rd "uci"; then
